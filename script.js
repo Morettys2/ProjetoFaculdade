@@ -23,31 +23,56 @@ async function loadCharizardImage() {
     charizardImageElement.alt = "Charizard Shiny"; // Atualiza a descrição da imagem
 }
 
-// Função para exibir os primeiros 12 Pokémon (ou qualquer lista fornecida)
+// Função para exibir uma lista de Pokémon ou uma mensagem de erro
 function displayPokemons(pokemonList) {
     const cardContainer = document.querySelector(".card-container");
+    if (!cardContainer) {
+        console.error("Elemento .card-container não encontrado.");
+        return;
+    }
+
     cardContainer.innerHTML = ''; // Limpa os cards existentes
 
-    pokemonList.forEach(pokemon => {
-        const card = document.createElement('div');
-        card.className = 'card';
+    if (pokemonList.length === 0) {
+        // Exibe uma mensagem de erro centralizada se não encontrar Pokémon
+        const errorMessage = document.createElement('p');
+        errorMessage.textContent = 'Nenhum Pokémon encontrado.';
+        errorMessage.style.color = '#333';
+        errorMessage.style.fontSize = '18px';
+        errorMessage.style.textAlign = 'center';
+        errorMessage.style.padding = '20px';
+        cardContainer.appendChild(errorMessage);
+        return;
+    }
 
-        const cardImage = document.createElement('div');
-        cardImage.className = 'card-image';
-        cardImage.style.backgroundImage = `url(${pokemon.sprites.front_default})`;
-
-        const pokemonName = document.createElement('h3');
-        pokemonName.textContent = capitalizeFirstLetter(pokemon.name); // Função para capitalizar a primeira letra
-
-        const pokemonType = document.createElement('p');
-        const types = pokemon.types.map(typeInfo => translateType(typeInfo.type.name)).join(', '); // Utiliza função para traduzir tipos
-
-        pokemonType.textContent = `Tipo: ${types}`;
-        card.appendChild(cardImage);
-        card.appendChild(pokemonName);
-        card.appendChild(pokemonType);
+    // Cria os cards para os Pokémon encontrados
+    pokemonList.forEach((pokemon) => {
+        const card = createPokemonCard(pokemon);
         cardContainer.appendChild(card);
     });
+}
+
+// Função para criar um card de Pokémon
+function createPokemonCard(pokemon) {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const cardImage = document.createElement('div');
+    cardImage.className = 'card-image';
+    cardImage.style.backgroundImage = `url(${pokemon.sprites.front_default})`;
+
+    const pokemonName = document.createElement('h3');
+    pokemonName.textContent = capitalizeFirstLetter(pokemon.name); // Função para capitalizar a primeira letra
+
+    const pokemonType = document.createElement('p');
+    const types = pokemon.types.map(typeInfo => translateType(typeInfo.type.name)).join(', '); // Utiliza função para traduzir tipos
+
+    pokemonType.textContent = `Tipo: ${types}`;
+    card.appendChild(cardImage);
+    card.appendChild(pokemonName);
+    card.appendChild(pokemonType);
+
+    return card;
 }
 
 // Função para capitalizar a primeira letra
@@ -83,7 +108,7 @@ function translateType(type) {
 // Adiciona evento de entrada para filtrar Pokémon
 document.getElementById("search-input").addEventListener('input', filterPokemons);
 
-// Função para filtrar Pokémon baseado no tipo
+// Função para filtrar Pokémon baseado no tipo ou nome
 function filterPokemons() {
     const searchInput = document.getElementById("search-input").value.toLowerCase();
     const cardContainer = document.querySelector(".card-container");
@@ -97,25 +122,20 @@ function filterPokemons() {
     // Limpa os cards iniciais para exibir apenas os resultados da pesquisa
     cardContainer.innerHTML = '';
 
-    // Filtra Pokémon de acordo com o tipo pesquisado, limitando a 12 resultados
+    // Filtra Pokémon de acordo com o tipo ou nome pesquisado, limitando a 12 resultados
     const filteredPokemons = allPokemons
-        .filter(pokemon => pokemon.types.some(typeInfo => translateType(typeInfo.type.name).toLowerCase().includes(searchInput)))
+        .filter(pokemon =>
+            pokemon.name.toLowerCase().includes(searchInput) || // Filtra pelo nome
+            pokemon.types.some(typeInfo => translateType(typeInfo.type.name).toLowerCase().includes(searchInput)) // Filtra pelo tipo
+        )
         .slice(0, 12); // Limita a 12 Pokémon para exibir apenas 12 resultados
 
-    // Se nenhum Pokémon for encontrado, exibe uma mensagem nos cards
-    if (filteredPokemons.length === 0) {
-        const noResultsMessage = document.createElement('p');
-        noResultsMessage.textContent = 'Nenhum Pokémon encontrado para este tipo.';
-        noResultsMessage.style.color = '#333';
-        noResultsMessage.style.fontSize = '16px';
-        noResultsMessage.style.textAlign = 'center';
-        cardContainer.appendChild(noResultsMessage);
-        return;
-    }
-
-    // Exibe os Pokémons filtrados nos cards principais
+    // Exibe os Pokémons filtrados ou uma mensagem de erro
     displayPokemons(filteredPokemons);
 }
 
 // Chama a função para carregar todos os Pokémon assim que a página é carregada
 window.onload = () => loadPokemons(150);
+
+
+
