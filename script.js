@@ -139,3 +139,18 @@ window.onload = () => loadPokemons(150);
 
 
 
+const searchInput = document.getElementById('search-input');
+const clearSearch = document.getElementById('clear-search');
+
+// Mostra o "X" quando há texto no campo de pesquisa
+searchInput.addEventListener('input', () => {
+    clearSearch.style.display = searchInput.value ? 'inline' : 'none';
+});
+
+// Limpa o conteúdo do campo de pesquisa ao clicar no "X" e exibe o conteúdo inicial
+clearSearch.addEventListener('click', () => {
+    searchInput.value = '';
+    clearSearch.style.display = 'none';
+    searchInput.focus(); // Foca novamente no campo de entrada
+    displayPokemons(allPokemons.slice(0, 12)); // Mostra os primeiros 12 Pokémon
+});

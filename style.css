@@ -79,14 +79,6 @@ body {
     position: relative;
 }
 
-.nav-links a:not(:last-child)::after {
-    content: "|";
-    /* Adiciona o separador */
-    color: #ffffff;
-    /* Cor do separador */
-    margin-left: 10px;
-    /* Espaço entre o link e o separador */
-}
 
 .nav-links a:hover {
     color: #ffcc00;
@@ -95,6 +87,16 @@ body {
     transform: translateY(-2px);
     /* Levanta o link ao passar o mouse */
 }
+
+#clear-search {
+    width: 20px;
+    height: 20px;
+    margin-left: 8px;
+    display: none;
+    /* Mantém o "X" oculto inicialmente */
+    cursor: pointer;
+}
+
 
 /* Estilo da seção de conteúdo */
 .welcome-section {
